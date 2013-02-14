@@ -90,6 +90,11 @@ SchemesList* Parser::parseSchemesList(int* newCount)
         stothelizzle->addScheme(scheme);
         ++(*count);
     }
+    if(TokenTypeToString(getTokenType()) != "FACTS")
+    {
+        this->failure = true;
+        this->fail = (*tokens)[(*count)];
+    }
     return stothelizzle;
 }
 
