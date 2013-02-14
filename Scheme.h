@@ -1,0 +1,26 @@
+#ifndef SCHEME_H_
+#define SCHEME_H_
+
+#include "IdentifierList.h"
+
+class Scheme
+{
+  public:
+    
+    Scheme();
+    ~Scheme();
+
+    void setID(Token* inputID);
+
+    void setIDList(IdentifierList* identifierlist);
+
+    std::string toString();
+
+  private:
+    
+    Token* Id;
+    IdentifierList* IDList;
+
+};
+
+#endif
