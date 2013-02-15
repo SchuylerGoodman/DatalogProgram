@@ -31,7 +31,7 @@ std::string SchemesList::toString()
     string out;
     for(int i = 0; i < listSize; ++i)
     {
-        out += "  " + schemes[i]->toString() + "\n";
+        out += "\n  " + schemes[i]->toString();
     }
     return out;
 }

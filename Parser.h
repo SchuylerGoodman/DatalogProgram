@@ -31,7 +31,11 @@ class Parser
 
     IdentifierList* parseIdentifierList(int* newCount);
 
-//    FactsList* parseFactsList();
+    FactsList* parseFactsList(int* newCount, Domain* dman);
+
+    Fact* parseFact(int* newCount, Domain* dman);
+
+    ConstantList* parseConstantList(int* newCount, Domain* dman);
 
     //etc
     

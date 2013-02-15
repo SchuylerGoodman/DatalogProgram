@@ -22,6 +22,9 @@ DatalogProgram* Parser::parseDatalogProgram()
 {
     Parser* parseTHIS = new Parser(tokens, count);
     DatalogProgram* dtothepizzle = new DatalogProgram();
+    Domain* domain = new Domain();
+    dtothepizzle->setDomain(domain);
+// Start of Schemes Parsing
     if(TokenTypeToString(getTokenType()) == "SCHEMES")
     {
         ++(*count);
@@ -35,10 +38,39 @@ DatalogProgram* Parser::parseDatalogProgram()
                 this->fail = parseTHIS->getFailToken();
                 return dtothepizzle;
             }
-         /*   else if(tokens[(*count)]->getTokenType() == FACTS)
+            // Start of Facts Parsing
+            else if(TokenTypeToString(getTokenType()) == "FACTS")
             {
-                //etc
-            }*/
+                ++(*count);
+                if(TokenTypeToString(getTokenType()) == "COLON")
+                {
+                    ++(*count);
+                    dtothepizzle->setFactsList(parseTHIS->parseFactsList(count, dtothepizzle->getDomain()));
+                    if(parseTHIS->hazFailed())
+                    {
+                        this->failure = true;
+                        this->fail = parseTHIS->getFailToken();
+                        return dtothepizzle;
+                    }
+                }
+                else
+                {
+                    this->failure = true;
+                    this->fail = (*tokens)[(*count)];
+                    return dtothepizzle;
+                }
+                // Start of Rules Parsing
+                /*if(TokenTypeToString(getTokenType()) == "RULES")
+                {
+                    //etc
+                }*/
+            }
+            else
+            {
+                this->failure = true;
+                this->fail = (*tokens)[(*count)];
+                return dtothepizzle;
+            }
         }
         else
         {
@@ -72,7 +104,7 @@ TokenType Parser::getTokenType()
     return token->getTokenType();
 }
 
-SchemesList* Parser::parseSchemesList(int* newCount)
+hemesList* Parser::parseSchemesList(int* newCount)
 {
     count = newCount;
     Parser* HYAAH = new Parser(tokens, count);
@@ -89,11 +121,6 @@ SchemesList* Parser::parseSchemesList(int* newCount)
         }
         stothelizzle->addScheme(scheme);
         ++(*count);
-    }
-    if(TokenTypeToString(getTokenType()) != "FACTS")
-    {
-        this->failure = true;
-        this->fail = (*tokens)[(*count)];
     }
     return stothelizzle;
 }
@@ -145,6 +172,12 @@ IdentifierList* Parser::parseIdentifierList(int* newCount)
                     itothelizzle->addID((*tokens)[(*count)]);
                     ++(*count);
                 }
+                else
+                {
+                    this->failure = true;
+                    this->fail = (*tokens)[(*count)];
+                    return itothelizzle;
+                }
             }
             else
             {
@@ -161,6 +194,109 @@ IdentifierList* Parser::parseIdentifierList(int* newCount)
     }
     return itothelizzle;
 }
+
+FactsList* Parser::parseFactsList(int* newCount, Domain* dman)
+{
+    count = newCount;
+    Parser* PraARse = new Parser(tokens, count);
+    FactsList* ftothelizzle = new FactsList();
+    Domain* domain = dman;
+
+    while(TokenTypeToString(getTokenType()) == "ID")
+    {
+        Fact* fact = PraARse->parseFact(count, domain);
+        if(PraARse->hazFailed())
+        {
+            this->failure = true;
+            this->fail = PraARse->getFailToken();
+            return ftothelizzle;
+        }
+        ftothelizzle->addFact(fact);
+        ++(*count);
+    }
+    return ftothelizzle;
+}
+
+Fact* Parser::parseFact(int* newCount, Domain* dman)
+{
+    count = newCount;
+    Parser* farse = new Parser(tokens, count);
+    Fact* fact = new Fact();
+    Domain* domain = dman;
+
+    fact->setID((*tokens)[(*count)]);
+    ++(*count);
+    if(TokenTypeToString(getTokenType()) == "LEFT_PAREN")
+    {
+        ++(*count);
+        fact->setConstantList(farse->parseConstantList(count, domain));
+        if(farse->hazFailed())
+        {
+            this->failure = true;
+            this->fail = farse->getFailToken();
+            return fact;
+        }
+    }
+    else
+    {
+        this->failure = true;
+        this->fail = (*tokens)[(*count)];
+        return fact;
+    }
+    return fact;
+}
+
+ConstantList* Parser::parseConstantList(int* newCount, Domain* dman)
+{
+    count = newCount;
+    ConstantList* ctothelizzle = new ConstantList();
+    Domain* domain = dman;
+
+    if(TokenTypeToString(getTokenType()) == "STRING")
+    {
+        ctothelizzle->setString((*tokens)[(*count)]);
+        dman->addString((*tokens)[(*count)]->getTokensValue());
+        ++(*count);
+        while(getTokenType() != RIGHT_PAREN)
+        {
+            if(getTokenType() == COMMA)
+            {
+                ++(*count);
+                if(getTokenType() == STRING)
+                {
+                    ctothelizzle->addString((*tokens)[(*count)]);
+                    dman->addString((*tokens)[(*count)]->getTokensValue());
+                    ++(*count);
+                }
+                else
+                {
+                    this->failure = true;
+                    this->fail = (*tokens)[(*count)];
+                    return ctothelizzle;
+                }
+            }
+            else
+            {
+                this->failure = true;
+                this->fail = (*tokens)[(*count)];
+                return ctothelizzle;
+            }
+        }
+        ++(*count);
+        if(getTokenType() != PERIOD)
+        {
+            this->failure = true;
+            this->fail = (*tokens)[(*count)];
+        }
+    }
+    else
+    {
+        this->failure = true;
+        this->fail = (*tokens)[(*count)];
+    }
+    return ctothelizzle;
+}
+
 
 vector<Token*>* MrVectorCleaner(vector<Token*>* input)
 {

@@ -1,3 +1,5 @@
 Schemes:
 span(x,yd)
-plan(&#|hoorah|#y,a,BRAH):
+plan(a,a,BRAH)
+Facts:
+span('blah,'mrah').

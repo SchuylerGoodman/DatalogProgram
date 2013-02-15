@@ -24,6 +24,12 @@ void Scheme::setIDList(IdentifierList* identifierlist)
     return;
 }
 
+int Scheme::getListSize()
+{
+    int size = IDList->getListSize() + 1;
+    return size;
+}
+
 std::string Scheme::toString()
 {
     string out;
