@@ -37,6 +37,20 @@ class Parser
 
     ConstantList* parseConstantList(int* newCount, Domain* dman);
 
+    RulesList* parseRulesList(int* newCount, Domain* dman);
+
+    Rule* parseRule(int* newCount, Domain* dman);
+
+    PredicateList* parsePredicateList(int* newCount, Domain* dman);
+
+    Predicate* parsePredicate(int* newCount, Domain* dman);
+
+    ParameterList* parseParameterList(int* newCount, Domain* dman);
+
+    Parameter* parseParameter(int* newCount, Domain* dman);
+
+    Expression* parseExpression(Parameter* param, int* newCount, Domain* dman);
+
     //etc
     
 //+++++++++++++++++++Data Members+++++++++++++++++++

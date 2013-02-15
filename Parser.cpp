@@ -52,6 +52,35 @@ DatalogProgram* Parser::parseDatalogProgram()
                         this->fail = parseTHIS->getFailToken();
                         return dtothepizzle;
                     }
+                    if(TokenTypeToString(getTokenType()) == "RULES")
+                    {
+                        ++(*count);
+                        if(TokenTypeToString(getTokenType()) == "COLON")
+                        {
+                            ++(*count);
+                            dtothepizzle->setRulesList(parseTHIS->parseRulesList(count, dtothepizzle->getDomain()));
+                            if(parseTHIS->hazFailed())
+                            {
+                                this->failure = true;
+                                this->fail = parseTHIS->getFailToken();
+                                return dtothepizzle;
+                            }
+                            //add QUERIES PARSE
+                        }
+                        else
+                        {
+                            this->failure = true;
+                            this->fail = (*tokens)[(*count)];
+                            return dtothepizzle;
+                        }
+
+                    }
+                    else
+                    {
+                        this->failure = true;
+                        this->fail = (*tokens)[(*count)];
+                        return dtothepizzle;
+                    }
                 }
                 else
                 {
@@ -297,7 +326,239 @@ ConstantList* Parser::parseConstantList(int* newCount, Domain* dman)
     return ctothelizzle;
 }
 
+RulesList* parseRulesList(int* newCount, Domain* dman)
+{
+    count = newCount;
+    Parser* parser = new Parser(tokens, count);
+    RulesList* rtothelizzle = new RulesList();
 
+    while(getTokenType() == ID)
+    {
+        Rule* rule = parser->parseRule(count, dman);
+        if(parser->hazFailed())
+        {
+            this->failure = true;
+            this->fail = parser->getFailToken();
+            return rtothelizzle;
+        }
+        ++(*count);
+        rtothelizzle->addRule(rule);
+    }
+    return rtothelizzle;
+}
+
+Rule* parseRule(int* newCount, Domain* dman)
+{
+    count = newCount;
+    Parser* parser = new Parser(tokens, count);
+    Rule* rule = new Rule();
+
+    rule->setHeadPredicate(parser->parseScheme(count));
+    if(parser->hazFailed())
+    {
+        this->failure = true;
+        this->fail = parser->getFailToken();
+        return rule;
+    }
+    ++(*count);
+
+    if(getTokenType() == COLON_DASH)
+    {
+        ++(*count);
+        rule->setPredicateList(parser->parsePredicateList(count, dman));
+        if(parser->hazFailed())
+        {
+            this->failure = true;
+            this->fail = parser->getFailToken();
+            return rule;
+        }
+        ++(*count);
+    }
+    else
+    {
+        this->failure = true;
+        this->fail = (*tokens)[(*count)];
+        return rule;
+    }
+    if(getTokenType() != PERIOD)
+    {
+        this->failure = true;
+        this->fail = (*tokens)[(*count)];
+        return rule;
+    }
+}
+
+PredicateList* parsePredicateList(int* newCount, Domain* dman)
+{
+    count = newCount;
+    PredicateList* ptothelizzle = new PredicateList();
+    Parser* parser = new Parser(tokens, count);
+
+    ptothelizzle->setPredicate(parser->parsePredicate(count, dman));
+    if(parser->hazFailed())
+    {
+        this->failure = true;
+        this->fail = parser->getFailToken();
+        return ptothelizzle;
+    }
+    ++(*count);
+    while(getTokenType() == COMMA)
+    {
+        ++(*count);
+        ptothelizzle->addPredicate(parser->parsePredicate(count, dman));
+        if(parser->hazFailed())
+        {
+            this->failure = true;
+            this->fail = parser->getFailToken();
+            return ptothelizzle;
+        }
+    }
+    return ptothelizzle;
+}
+
+Predicate* parsePredicate(int* newCount, Domain* dman)
+{
+    count = newCount;
+    Parser* parser = new Parser(tokens, count);
+    Predicate* predicate = new Predicate();
+
+    If(getTokenType() == ID)
+    {
+        predicate->setID((*tokens)[(*count)]);
+        ++(*count);
+    }
+    else
+    {
+        this->failure = true;
+        this->fail = (*tokens)[(*count)];
+        return predicate;
+    }
+    if(getTokenType() == LEFT_PAREN)
+    {
+        ++(*count);
+        ParameterList* ptothelizzle = parser->parseParameterList(count, dman);
+        if(parser->hazFailed())
+        {
+            this->failure = true;
+            this->fail = parser->getFailToken();
+            return predicate;
+        }
+        predicate->setParameterList(ptothelizzle);
+        ++(*count);
+    }
+    else
+    {
+        this->failure = true;
+        this->fail = (*tokens)[(*count)];
+        return predicate;
+    }
+    return predicate;
+}
+
+ParameterList* parseParameterList(int* newCount, Domain* dman)
+{
+    count = newCount;
+    Parser* parser = new Parser(tokens, count);
+    ParameterList* ptothelizzle = new ParameterList();
+
+    ptothelizzle->setParam(parser->parseParameter(count, dman));
+    if(parser->hazFailed())
+    {
+        this->failure = true;
+        this->fail = parser->getFailToken();
+        return ptothelizzle;
+    }
+    ++(*count);
+    while(getTokenType() == COMMA)
+    {
+        ++(*count);
+        Parameter* parameter = parser->parseParameter(count, dman);
+        if(parser->hazFailed())
+        {
+            this->failure = true;
+            this->fail = parser->getFailToken();
+            return ptothelizzle;
+        }
+        ptothelizzle->addParam(parameter);
+        ++(*count);
+    }
+    return ptothelizzle;
+}
+
+Parameter* parseParameter(int* newCount, Domain* dman)
+{
+    count = newCount;
+    Parser* parser = new Parser(tokens, count);
+    Parameter* parameter = new Parameter();
+
+    if(getTokenType() == STRING)
+    {
+        parameter->setToken((*tokens)[(*count)]);
+        dman->addString((*tokens)[(*count)]->getTokensValue());
+    }
+    else if(getTokenType() == ID)
+    {
+        parameter->setToken((*tokens)[(*count)]);
+    }
+    else if(getTokenType() == LEFT_PAREN)
+    {
+        ++(*count);
+        parser->parseExpression(parameter, count, dman);
+        if(parser->hazFailed())
+        {
+            this->failure = true;
+            this->fail = parser->getFailToken();
+            return parameter;
+        }
+    }
+    else
+    {
+        this->failure = true;
+        this->fail = parser->getFailToken();
+        return parameter;
+    }
+    return parameter;
+}
+
+void parseExpression(Parameter* param, int* newCount, Domain* dman)
+{
+    count = newCount;
+    Parser* parser = new Parser(tokens, count);
+    param->setExpression(new Parameter.Expression());
+
+    param->expression->setExParam(parser->parseParameter(count, dman));
+    if(parser->hazFailed())
+    {
+        this->failure = true;
+        this->fail = parser->getFailToken();
+        return;
+    }
+    ++(*count);
+    if(!param->expression->setExToken((*tokens)[(*count)]))
+    {
+        this->failure = true;
+        this->fail = (*tokens)[(*count)];
+        return;
+    }
+    else {++(*count);}
+    param->expression->setExParam(parser->parseParameter(count, dman));
+    if(parser->hazFailed())
+    {
+        this->failure = true;
+        this->fail = parser->getFailToken();
+        return;
+    }
+    ++(*count);
+    if(getTokenType() != RIGHT_PAREN)
+    {
+        this->failure = true;
+        this->fail = (*tokens)[(*count)];
+        return;
+    }
+    return;
+}
+
+/////////////////////////////////////////////////////////////
 vector<Token*>* MrVectorCleaner(vector<Token*>* input)
 {
     for(int i = 0; i < input->size(); ++i)
