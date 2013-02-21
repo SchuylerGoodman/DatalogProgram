@@ -9,6 +9,8 @@ class SchemesList
     SchemesList();
     ~SchemesList();
 
+    void setScheme(Scheme* inputScheme);
+
     void addScheme(Scheme* scheme);
 
     int getSize();
@@ -16,6 +18,7 @@ class SchemesList
     std::string toString();
   private:
 
+    Scheme* scheme;
     vector<Scheme*> schemes;
     int listSize;
 

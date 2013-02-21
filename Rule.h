@@ -2,6 +2,7 @@
 #define RULE_H_
 
 #include "PredicateList.h"
+#include "Scheme.h"
 
 class Rule
 {

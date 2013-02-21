@@ -3,6 +3,7 @@
 
 SchemesList::SchemesList()
 {
+    scheme = 0;
     listSize = 0;
 }
 
@@ -12,6 +13,12 @@ SchemesList::~SchemesList()
     {
         delete[] schemes[i];
     }
+}
+
+void SchemesList::setScheme(Scheme* inputScheme)
+{
+    scheme = inputScheme;
+    return;
 }
 
 void SchemesList::addScheme(Scheme* scheme)
@@ -29,6 +36,7 @@ int SchemesList::getSize()
 std::string SchemesList::toString()
 {
     string out;
+    out += "\n  " + scheme->toString();
     for(int i = 0; i < listSize; ++i)
     {
         out += "\n  " + schemes[i]->toString();

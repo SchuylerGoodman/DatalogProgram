@@ -3,8 +3,8 @@
 
 #include "SchemesList.h"
 #include "FactsList.h"
-//#include "RulesList.h"
-//#include "QueriesList.h"
+#include "RulesList.h"
+#include "QueryList.h"
 #include "Domain.h"
 #include <iostream>
 #include <sstream>
@@ -23,6 +23,14 @@ class DatalogProgram
 
     FactsList* getFactsList();
 
+    void setRulesList(RulesList* ruleslist);
+
+    RulesList* getRulesList();
+
+    void setQueryList(QueryList* querylist);
+
+    QueryList* getQueryList();
+
     void setDomain(Domain* domain);
 
     Domain* getDomain();
@@ -31,8 +39,8 @@ class DatalogProgram
   private:
     SchemesList* slist;
     FactsList* flist;
- //   RulesList* rlist;
-  //  QueriesList* qlist;
+    RulesList* rlist;
+    QueryList* qlist;
     Domain* dman;
 
 };

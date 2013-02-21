@@ -27,7 +27,7 @@ std::string RulesList::toString()
     std::string out;
     for(int i = 0; i < listSize; ++i)
     {
-        out += rulesList[i];
+        out += rulesList[i]->toString();
     }
     return out;
 }

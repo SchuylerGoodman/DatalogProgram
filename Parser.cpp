@@ -52,6 +52,7 @@ DatalogProgram* Parser::parseDatalogProgram()
                         this->fail = parseTHIS->getFailToken();
                         return dtothepizzle;
                     }
+                    // Start of Rules Parsing
                     if(TokenTypeToString(getTokenType()) == "RULES")
                     {
                         ++(*count);
@@ -65,7 +66,34 @@ DatalogProgram* Parser::parseDatalogProgram()
                                 this->fail = parseTHIS->getFailToken();
                                 return dtothepizzle;
                             }
-                            //add QUERIES PARSE
+                            // Start of Query Parsing
+                            if(getTokenType() == QUERIES)
+                            {
+                                ++(*count);
+                                if(getTokenType() == COLON)
+                                {
+                                    ++(*count);
+                                    dtothepizzle->setQueryList(parseTHIS->parseQueryList(count, dtothepizzle->getDomain()));
+                                    if(parseTHIS->hazFailed())
+                                    {
+                                        this->failure = true;
+                                        this->fail = parseTHIS->getFailToken();
+                                        return dtothepizzle;
+                                    }
+                                }
+                                else
+                                {
+                                    this->failure = true;
+                                    this->fail = (*tokens)[(*count)];
+                                    return dtothepizzle;
+                                }
+                            }
+                            else
+                            {
+                                this->failure = true;
+                                this->fail = (*tokens)[(*count)];
+                                return dtothepizzle;
+                            }
                         }
                         else
                         {
@@ -88,11 +116,6 @@ DatalogProgram* Parser::parseDatalogProgram()
                     this->fail = (*tokens)[(*count)];
                     return dtothepizzle;
                 }
-                // Start of Rules Parsing
-                /*if(TokenTypeToString(getTokenType()) == "RULES")
-                {
-                    //etc
-                }*/
             }
             else
             {
@@ -133,23 +156,39 @@ TokenType Parser::getTokenType()
     return token->getTokenType();
 }
 
-hemesList* Parser::parseSchemesList(int* newCount)
+SchemesList* Parser::parseSchemesList(int* newCount)
 {
     count = newCount;
     Parser* HYAAH = new Parser(tokens, count);
     SchemesList* stothelizzle = new SchemesList();
-    
-    while(TokenTypeToString(getTokenType()) == "ID")
+    if(getTokenType() == ID)
     {
-        Scheme* scheme = HYAAH->parseScheme(count);
+        stothelizzle->setScheme(HYAAH->parseScheme(count));
         if(HYAAH->hazFailed())
         {
             this->failure = true;
             this->fail = HYAAH->getFailToken();
             return stothelizzle;
         }
-        stothelizzle->addScheme(scheme);
         ++(*count);
+        while(TokenTypeToString(getTokenType()) == "ID")
+        {
+            Scheme* scheme = HYAAH->parseScheme(count);
+            if(HYAAH->hazFailed())
+            {
+                this->failure = true;
+                this->fail = HYAAH->getFailToken();
+                return stothelizzle;
+            }
+            stothelizzle->addScheme(scheme);
+            ++(*count);
+        }
+    }
+    else
+    {
+        this->failure = true;
+        this->fail = (*tokens)[(*count)];
+        return stothelizzle;
     }
     return stothelizzle;
 }
@@ -326,7 +365,7 @@ ConstantList* Parser::parseConstantList(int* newCount, Domain* dman)
     return ctothelizzle;
 }
 
-RulesList* parseRulesList(int* newCount, Domain* dman)
+RulesList* Parser::parseRulesList(int* newCount, Domain* dman)
 {
     count = newCount;
     Parser* parser = new Parser(tokens, count);
@@ -347,7 +386,7 @@ RulesList* parseRulesList(int* newCount, Domain* dman)
     return rtothelizzle;
 }
 
-Rule* parseRule(int* newCount, Domain* dman)
+Rule* Parser::parseRule(int* newCount, Domain* dman)
 {
     count = newCount;
     Parser* parser = new Parser(tokens, count);
@@ -372,7 +411,6 @@ Rule* parseRule(int* newCount, Domain* dman)
             this->fail = parser->getFailToken();
             return rule;
         }
-        ++(*count);
     }
     else
     {
@@ -386,9 +424,10 @@ Rule* parseRule(int* newCount, Domain* dman)
         this->fail = (*tokens)[(*count)];
         return rule;
     }
+    return rule;
 }
 
-PredicateList* parsePredicateList(int* newCount, Domain* dman)
+PredicateList* Parser::parsePredicateList(int* newCount, Domain* dman)
 {
     count = newCount;
     PredicateList* ptothelizzle = new PredicateList();
@@ -412,17 +451,18 @@ PredicateList* parsePredicateList(int* newCount, Domain* dman)
             this->fail = parser->getFailToken();
             return ptothelizzle;
         }
+        ++(*count);
     }
     return ptothelizzle;
 }
 
-Predicate* parsePredicate(int* newCount, Domain* dman)
+Predicate* Parser::parsePredicate(int* newCount, Domain* dman)
 {
     count = newCount;
     Parser* parser = new Parser(tokens, count);
     Predicate* predicate = new Predicate();
 
-    If(getTokenType() == ID)
+    if(getTokenType() == ID)
     {
         predicate->setID((*tokens)[(*count)]);
         ++(*count);
@@ -444,7 +484,6 @@ Predicate* parsePredicate(int* newCount, Domain* dman)
             return predicate;
         }
         predicate->setParameterList(ptothelizzle);
-        ++(*count);
     }
     else
     {
@@ -455,7 +494,7 @@ Predicate* parsePredicate(int* newCount, Domain* dman)
     return predicate;
 }
 
-ParameterList* parseParameterList(int* newCount, Domain* dman)
+ParameterList* Parser::parseParameterList(int* newCount, Domain* dman)
 {
     count = newCount;
     Parser* parser = new Parser(tokens, count);
@@ -482,10 +521,16 @@ ParameterList* parseParameterList(int* newCount, Domain* dman)
         ptothelizzle->addParam(parameter);
         ++(*count);
     }
+    if(getTokenType() != RIGHT_PAREN)
+    {
+        this->failure = true;
+        this->fail = (*tokens)[(*count)];
+        return ptothelizzle;
+    }
     return ptothelizzle;
 }
 
-Parameter* parseParameter(int* newCount, Domain* dman)
+Parameter* Parser::parseParameter(int* newCount, Domain* dman)
 {
     count = newCount;
     Parser* parser = new Parser(tokens, count);
@@ -520,13 +565,13 @@ Parameter* parseParameter(int* newCount, Domain* dman)
     return parameter;
 }
 
-void parseExpression(Parameter* param, int* newCount, Domain* dman)
+void Parser::parseExpression(Parameter* param, int* newCount, Domain* dman)
 {
     count = newCount;
     Parser* parser = new Parser(tokens, count);
-    param->setExpression(new Parameter.Expression());
+    param->newExpression();
 
-    param->expression->setExParam(parser->parseParameter(count, dman));
+    param->setExParam(parser->parseParameter(count, dman));
     if(parser->hazFailed())
     {
         this->failure = true;
@@ -534,14 +579,14 @@ void parseExpression(Parameter* param, int* newCount, Domain* dman)
         return;
     }
     ++(*count);
-    if(!param->expression->setExToken((*tokens)[(*count)]))
+    if(!param->setExToken((*tokens)[(*count)]))
     {
         this->failure = true;
         this->fail = (*tokens)[(*count)];
         return;
     }
     else {++(*count);}
-    param->expression->setExParam(parser->parseParameter(count, dman));
+    param->setExParam(parser->parseParameter(count, dman));
     if(parser->hazFailed())
     {
         this->failure = true;
@@ -558,13 +603,84 @@ void parseExpression(Parameter* param, int* newCount, Domain* dman)
     return;
 }
 
+QueryList* Parser::parseQueryList(int* newCount, Domain* dman)
+{
+    count = newCount;
+    Parser* parser = new Parser(tokens, count);
+    QueryList* qtothelizzle = new QueryList();
+
+    if(getTokenType() == ID)
+    {
+        qtothelizzle->setQuery(parser->parseQuery(count, dman));
+        if(parser->hazFailed())
+        {
+            this->failure = true;
+            this->fail = parser->getFailToken();
+            return qtothelizzle;
+        }
+        ++(*count);
+        while(getTokenType() == ID)
+        {
+            qtothelizzle->addQuery(parser->parseQuery(count, dman));
+            if(parser->hazFailed())
+            {
+                this->failure = true;
+                this->fail = parser->getFailToken();
+                return qtothelizzle;
+            }
+            ++(*count);
+        }
+    }
+    else
+    {
+        this->failure = true;
+        this->fail = (*tokens)[(*count)];
+        return qtothelizzle;
+    }
+    return qtothelizzle;
+}
+
+Query* Parser::parseQuery(int* newCount, Domain* dman)
+{
+    count = newCount;
+    Parser* parser = new Parser(tokens, count);
+    Query* query = new Query();
+
+    query->setPredicate(parser->parsePredicate(count, dman));
+    if(parser->hazFailed())
+    {
+        this->failure = true;
+        this->fail = parser->getFailToken();
+        return query;
+    }
+    ++(*count);
+    if(getTokenType() != Q_MARK)
+    {
+        this->failure = true;
+        this->fail = (*tokens)[(*count)];
+        return query;
+    }
+    return query;
+}
+
 /////////////////////////////////////////////////////////////
 vector<Token*>* MrVectorCleaner(vector<Token*>* input)
 {
-    for(int i = 0; i < input->size(); ++i)
+    bool comment = true;
+    while(comment)
     {
-        Token* token = (*input)[i];
-        if(token->getTokenType() == COMMENT)
+        int i = 0;
+        comment = false;
+        for(i = 0; i < input->size(); ++i)
+        {
+            Token* token = (*input)[i];
+            if(token->getTokenType() == COMMENT)
+            {
+                comment = true;
+                break;
+            }
+        }
+        if(comment)
         {
             for(int j = i; j < (input->size() + 1); ++j)
             {

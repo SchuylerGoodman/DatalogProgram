@@ -24,7 +24,7 @@ class Parameter
 
     };
 
-    void setExpression(Expression* inputExpression);
+    void newExpression();
 
     void setToken(Token* inputToken);
 
@@ -33,6 +33,8 @@ class Parameter
     bool setExToken(Token* inputToken);
 
     std::string toString();
+
+    std::string expressionToString();
 
   private:
 

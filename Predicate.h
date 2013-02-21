@@ -1,6 +1,8 @@
 #ifndef PREDICATE_H_
 #define PREDICATE_H_
 
+#include "ParameterList.h"
+
 class Predicate
 {
 

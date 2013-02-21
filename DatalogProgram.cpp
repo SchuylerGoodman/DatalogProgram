@@ -10,8 +10,8 @@ DatalogProgram::~DatalogProgram()
     delete[] slist;
     delete[] flist;
     delete[] dman;
-//    delete rlist;
-//    delete qlist;
+    delete rlist;
+    delete qlist;
 }
 
 void DatalogProgram::setSchemesList(SchemesList* schemeslist)
@@ -36,6 +36,28 @@ FactsList* DatalogProgram::getFactsList()
     return flist;
 }
 
+void DatalogProgram::setRulesList(RulesList* ruleslist)
+{
+    rlist = ruleslist;
+    return;
+}
+
+RulesList* DatalogProgram::getRulesList()
+{
+    return rlist;
+}
+
+void DatalogProgram::setQueryList(QueryList* querylist)
+{
+    qlist = querylist;
+    return;
+}
+
+QueryList* DatalogProgram::getQueryList()
+{
+    return qlist;
+}
+
 void DatalogProgram::setDomain(Domain* domain)
 {
     dman = domain;
@@ -51,6 +73,8 @@ std::string DatalogProgram::toString()
     string out;
     stringstream stoi; stoi << slist->getSize();
     stringstream ftoi; ftoi << flist->getSize();
+    stringstream rtoi; rtoi << rlist->getSize();
+    stringstream qtoi; qtoi << (qlist->getSize() + 1);
     stringstream dtoi; dtoi << dman->getSize();
     out += "Schemes(" + stoi.str();
     out += "):";
@@ -58,13 +82,12 @@ std::string DatalogProgram::toString()
     out += "\nFacts(" + ftoi.str();
     out += "):";
     out += flist->toString();
-    /*
-    out += "Rules(" + rlist->getSize() + "):";
+    out += "\nRules(" + rtoi.str();
+    out += "):";
     out += rlist->toString();
-    out += "Queries(" + qlist->getSize() + ");";
+    out += "\nQueries(" + qtoi.str();
+    out += "):";
     out += qlist->toString();
-*/
-    //need to do something with the domain when you get to it
     out += "\nDomain(" + dtoi.str();
     out += "):";
     out += dman->toString();

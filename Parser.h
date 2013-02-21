@@ -49,7 +49,10 @@ class Parser
 
     Parameter* parseParameter(int* newCount, Domain* dman);
 
-    Expression* parseExpression(Parameter* param, int* newCount, Domain* dman);
+    void parseExpression(Parameter* param, int* newCount, Domain* dman);
+    QueryList* parseQueryList(int* newCount, Domain* dman);
+
+    Query* parseQuery(int* newCount, Domain* dman);
 
     //etc
     

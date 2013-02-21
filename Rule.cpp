@@ -32,7 +32,7 @@ std::string Rule::toString()
 {
     std::string out;
     out += "\n  " + HeadPredicate->toString();
-    out += " :- ";
+    out += " :-";
     out += predicateList->toString();
     return out;
 }

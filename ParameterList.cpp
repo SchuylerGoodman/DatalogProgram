@@ -17,7 +17,7 @@ void ParameterList::setParam(Parameter* inputParameter)
     return;
 }
 
-void ParameterLst::addParam(Parameter* inputParameter)
+void ParameterList::addParam(Parameter* inputParameter)
 {
     parameterList.push_back(inputParameter);
     ++listSize;
