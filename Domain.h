@@ -3,6 +3,7 @@
 
 #include "Lex.h"
 #include <string>
+#include <set>
 
 class Domain
 {
@@ -38,7 +39,7 @@ class Domain
 
   private:
 
-    vector<std::string> strings;
+    set<std::string> strings;
 
     int listSize;
 

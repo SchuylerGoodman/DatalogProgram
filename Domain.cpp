@@ -12,15 +12,7 @@ Domain::~Domain()
 
 void Domain::addString(std::string inString)
 {
-    for(int i = 0; i < listSize; ++i)
-    {
-        if(strings[i] == inString)
-        {
-            return;
-        }
-    }
-    strings.push_back(inString);
-    ++listSize;
+    strings.insert(inString);
     return;
 }
 
@@ -32,9 +24,10 @@ int Domain::getSize()
 std::string Domain::toString()
 {
     std::string out;
-    for(int i = 0; i < listSize; ++i)
+    set<std::string>::iterator it;
+    for(it = strings.begin(); it != strings.end(); ++it)
     {
-        out += "\n  " + strings[i];
+        out += "\n  " + *it;
     }
     return out;
 }

@@ -702,7 +702,7 @@ int main(int argc, char* argv[])
     if(parser->hazFailed())
     {
         cout << "Failure!" << endl;
-        cout << parser->getFailToken()->toString();
+        cout << "  " << parser->getFailToken()->toString();
     }
     else
     {

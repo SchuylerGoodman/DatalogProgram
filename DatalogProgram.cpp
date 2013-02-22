@@ -71,7 +71,7 @@ Domain* DatalogProgram::getDomain()
 std::string DatalogProgram::toString()
 {
     string out;
-    stringstream stoi; stoi << slist->getSize();
+    stringstream stoi; stoi << (slist->getSize() + 1);
     stringstream ftoi; ftoi << flist->getSize();
     stringstream rtoi; rtoi << rlist->getSize();
     stringstream qtoi; qtoi << (qlist->getSize() + 1);

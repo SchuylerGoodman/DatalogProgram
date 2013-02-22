@@ -34,5 +34,6 @@ std::string Rule::toString()
     out += "\n  " + HeadPredicate->toString();
     out += " :-";
     out += predicateList->toString();
+    out += ".";
     return out;
 }

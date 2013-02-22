@@ -33,6 +33,6 @@ std::string Fact::toString()
 {
     std::string out;
     out += "\n  " + Id->getTokensValue();
-    out += "(" + clist->toString() + ")";
+    out += "(" + clist->toString() + ").";
     return out;
 }
